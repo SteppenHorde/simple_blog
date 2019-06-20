@@ -19,7 +19,7 @@ class User(AbstractUser):
 
 
 class Blog(models.Model):
-    author = OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    author = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
 
 
 class BlogPost(models.Model):
