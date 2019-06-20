@@ -16,14 +16,14 @@ class MyUserManager(UserManager):
 
 
 
-class User(AbstractUser):
+class CustomUser(AbstractUser):
     objects = MyUserManager()
     def __str__(self):
         return self.email
 
 
 class Blog(models.Model):
-    author = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    author = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
 
 
 class BlogPost(models.Model):
