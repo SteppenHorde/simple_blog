@@ -6,10 +6,14 @@ from django.db import models
 
 
 class MyUserManager(UserManager):
-    def create_user():
-        user = User()
+    def create_user(username, email=None, password=None, **extra_fields):
+        user = User(username, email=None, password=None, **extra_fields)
         blog = Blog(author=user)
         return user
+
+    def create_superuser(username, email, password, **extra_fields):
+        return super().create_superuser(username, email, password, **extra_fields)
+
 
 
 class User(AbstractUser):
