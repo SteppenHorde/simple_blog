@@ -9,7 +9,8 @@ class Blog(models.Model):
     author = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
 
     def __str__(self):
-        return f"{self.author.username}'s blog"
+        author_username = self.author.username
+        return f"{author_username}' blog" if author_username[-1] == 's' else f"{author_username}'s blog"
 
 
 class BlogPost(models.Model):
