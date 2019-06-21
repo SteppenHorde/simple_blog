@@ -1,17 +1,30 @@
 from django.contrib import admin
-from django.contrib.auth import get_user_model
-from django.contrib.auth.admin import UserAdmin
 
-from .forms import CustomUserCreationForm, CustomUserChangeForm
-from .models import CustomUser
+from .models import User, Blog, BlogPost
 
 
+class UserAdmin(admin.ModelAdmin):
+    fieldsets = [
+        (None, {'fields': ['username', 'password', 'email']}),
+    ]
+    search_fields = ['username']
 
-class CustomUserAdmin(UserAdmin):
-    add_form = CustomUserCreationForm
-    form = CustomUserChangeForm
-    model = CustomUser
-    list_display = ['email', 'username',]
+admin.site.register(User, UserAdmin)
 
 
-admin.site.register(CustomUser, CustomUserAdmin)
+class BlogAdmin(admin.ModelAdmin):
+    fieldsets = [
+        (None, {'fields': ['author']}),
+    ]
+
+admin.site.register(Blog, BlogAdmin)
+
+
+class BlogPostAdmin(admin.ModelAdmin):
+    fieldsets = [
+        (None, {'fields': ['blog', 'title', 'text', 'image', 'pub_date', 'published']}),
+    ]
+    list_filter = ['pub_date']
+    search_fields = ['title', 'text']
+
+admin.site.register(BlogPost, BlogPostAdmin)

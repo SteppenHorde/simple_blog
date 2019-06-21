@@ -6,24 +6,23 @@ from django.db import models
 
 
 class MyUserManager(UserManager):
-    def create_user(username, email=None, password=None, **extra_fields):
-        user = User(username, email=None, password=None, **extra_fields)
-        blog = Blog(author=user)
+    def create_user(username, password, email=None, **extra_fields):
+        user = User(username, password, email=None, **extra_fields)
         return user
 
-    def create_superuser(username, email, password, **extra_fields):
-        return super().create_superuser(username, email, password, **extra_fields)
 
-
-
-class CustomUser(AbstractUser):
+class User(AbstractUser):
     objects = MyUserManager()
+
     def __str__(self):
-        return self.email
+        return self.username
 
 
 class Blog(models.Model):
-    author = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
+    author = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+
+    def __str__(self):
+        return f"{self.author.username}'s blog"
 
 
 class BlogPost(models.Model):
