@@ -1,15 +1,7 @@
 from django.contrib import admin
 
-from .models import User, Blog, BlogPost
+from .models.blog import Blog, BlogPost
 
-
-class UserAdmin(admin.ModelAdmin):
-    fieldsets = [
-        (None, {'fields': ['username', 'password', 'email']}),
-    ]
-    search_fields = ['username']
-
-admin.site.register(User, UserAdmin)
 
 
 class BlogAdmin(admin.ModelAdmin):

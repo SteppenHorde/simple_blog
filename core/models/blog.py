@@ -1,21 +1,8 @@
 from django.db import models
 from django.utils import timezone
-from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
+from django.contrib.auth.models import User
 
-
-
-class MyUserManager(UserManager):
-    def create_user(username, password, email=None, **extra_fields):
-        user = User(username, password, email=None, **extra_fields)
-        return user
-
-
-class User(AbstractUser):
-    objects = MyUserManager()
-
-    def __str__(self):
-        return self.username
 
 
 class Blog(models.Model):
