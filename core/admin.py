@@ -6,7 +6,7 @@ from .models.blog import Blog, BlogPost
 
 class BlogAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None, {'fields': ['author']}),
+        (None, {'fields': ['author', 'subscribers']}),
     ]
 
 admin.site.register(Blog, BlogAdmin)
@@ -14,7 +14,7 @@ admin.site.register(Blog, BlogAdmin)
 
 class BlogPostAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None, {'fields': ['blog', 'title', 'text', 'image', 'pub_date', 'published']}),
+        (None, {'fields': ['blog', 'read', 'title', 'text', 'image', 'pub_date', 'published']}),
     ]
     list_filter = ['pub_date']
     search_fields = ['title', 'text']
