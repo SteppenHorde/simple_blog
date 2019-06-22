@@ -7,16 +7,16 @@ from django.contrib.auth.models import User
 
 class Blog(models.Model):
     author = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    subscribers = models.ManyToManyField(User, related_name='subscribers_blog_set', null=True, blank=True)
+    subscribers = models.ManyToManyField(User, related_name='subscribers_blog_set', blank=True)
+    title = models.CharField(verbose_name='Название блога', max_length=100)
 
     def __str__(self):
-        author_username = self.author.username
-        return f"{author_username}' blog" if author_username[-1] == 's' else f"{author_username}'s blog"
+        return self.title
 
 
 class BlogPost(models.Model):
     blog = models.ForeignKey(Blog, on_delete=models.CASCADE)
-    read = models.ManyToManyField(User, related_name='read_blogpost_set', null=True, blank=True)
+    read = models.ManyToManyField(User, related_name='read_blogpost_set', blank=True)
     title = models.CharField(verbose_name='Заголовок', max_length=100)
     text = models.TextField(verbose_name='Текст', help_text='Показывается на страничке поста')
     image = models.ImageField(upload_to='core/blog/images', verbose_name='Картинка', blank=True, null=True)
