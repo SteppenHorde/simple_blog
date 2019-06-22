@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.views.generic.base import TemplateView
 from django.views import generic, View
 from django.contrib.auth.models import User
+from django.urls import reverse
+from django.shortcuts import redirect
 
 from .models.blog import Blog, BlogPost
 
@@ -119,11 +121,7 @@ class SubscribersManager(View):
         else:
             blog_subscribers.remove(user)
 
-        context = {
-
-        }
-
-        return render(request, template_name, context=context)
+        return redirect(reverse('main'))
 
 
 class CreatePost(generic.CreateView):
