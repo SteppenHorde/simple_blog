@@ -1,0 +1,18 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Все блоги{% endblock %}
+
+{% block styles %}
+  <link rel="stylesheet" type="text/css" href="{% static "core/css/main.css" %}">
+{% endblock %}
+
+{% block content %}
+<div class="row main_desc">
+  <h1 class="col-sm-12 main_h"><strong>Все блоги:</strong></h1>
+</div>
+
+<div class="row">
+  {% include "core/blogs_list.html" %}
+</div>
+{% endblock %}

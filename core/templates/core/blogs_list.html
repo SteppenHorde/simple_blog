@@ -1,0 +1,25 @@
+{% if blogs_set.count > 0 %}
+  {% for blog in blogs_set %}
+    <div class="col-lg-4">
+      <div class="blogs col-md-12">
+        <h3>
+          <strong><a href="{% url "show_blog" blog.author.id %}">{{ blog.title }}</a></strong>
+          <form method="post" action="{% url "(un)subscribe" blog.author.id %}">
+            {% csrf_token %}
+            {% if user.is_authenticated %}
+              {% if user.id != blog.author.id %}
+                <input type="submit" class="btn btn-outline-dark btn-sm" value="Подписаться">
+              {% else %}
+                <p>Это ваш блог</p>
+              {% endif %}
+            {% else %}
+              <p>Чтобы подписаться нужно <a href="{% url "login" %}?next={{request.path}}">войти</a></p>
+            {% endif %}
+          </form>
+        </h3>
+      </div>
+    </div>
+  {% endfor %}
+{% else %}
+  <p>Ни одного блога:(</p>
+{% endif %}

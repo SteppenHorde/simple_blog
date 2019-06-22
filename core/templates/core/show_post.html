@@ -1,0 +1,22 @@
+<!-- templates/core/show_post.html -->
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block styles %}
+  <link rel="stylesheet" type="text/css" href="{% static "core/css/main.css" %}">
+{% endblock %}
+
+{% block content %}
+  <div class="content">
+    <div class="post">
+      <h1><strong>{{ post.title }} ({{ blog.title }})</strong></h1>
+      <p class="post-pub_date">{{ post.pub_date }}</p>
+      {% if post.img %}
+        <img class="post_img" src="{{ post.image.url }}" alt="Картинка к посту" width="100%" vspace="10"></img>
+      {% endif %}
+      <p>{{ post.text }}</p>
+    </div>
+  </div>
+{% endblock %}

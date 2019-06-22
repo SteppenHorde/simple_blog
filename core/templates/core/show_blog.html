@@ -1,0 +1,32 @@
+<!-- templates/core/show_blog.html -->
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}{{ blog.title }}{% endblock %}
+
+{% block styles %}
+  <link rel="stylesheet" type="text/css" href="{% static "core/css/main.css" %}">
+{% endblock %}
+
+{% block content %}
+  <div class="content">
+    <h1>
+      <strong>{{ blog.title }}</strong>
+      <form method="post" action="{% url "(un)subscribe" blog.author.id %}">
+        {% csrf_token %}
+        {% if user.is_authenticated %}
+          {% if user.id != blog.author.id %}
+            <input type="submit" class="btn btn-outline-dark btn-sm" value="Подписаться">
+          {% else %}
+            <p>Это ваш блог</p>
+          {% endif %}
+        {% else %}
+          <p>Чтобы подписаться нужно <a href="{% url "login" %}?next={{request.path}}">войти</a></p>
+        {% endif %}
+      </form>
+    </h1>
+    <div class="row">
+      {% include "core/posts_list.html" %}
+    </div>
+  </div>
+{% endblock %}

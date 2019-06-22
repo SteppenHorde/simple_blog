@@ -1,7 +1,7 @@
 {% extends "core/base.html" %}
 {% load static %}
 
-{% block title %}Simple I/O apps{% endblock %}
+{% block title %}Simple blogs{% endblock %}
 
 {% block styles %}
   <link rel="stylesheet" type="text/css" href="{% static "core/css/main.css" %}">
@@ -9,10 +9,14 @@
 
 {% block content %}
 <div class="row main_desc">
-  <h1 class="col-sm-12 main_h"><strong>Добро пожаловать на Simple I/O apps!</strong></h1>
+  <h1 class="col-sm-12 main_h"><strong>Персональная лента:</strong></h1>
 </div>
 
 <div class="row">
-
+  {% if user.is_authenticated %}
+    {% include "core/posts_list.html" %}
+  {% else %}
+    <p>Вы не вошли. <a href="{% url "login" %}?next={{request.path}}">Войти</a></p>
+  {% endif %}
 </div>
 {% endblock %}
