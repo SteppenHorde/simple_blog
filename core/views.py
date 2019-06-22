@@ -4,6 +4,7 @@ from django.views import generic, View
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.shortcuts import redirect
+from django.db.models import Q
 
 from .models.blog import Blog, BlogPost
 
@@ -11,12 +12,21 @@ from .models.blog import Blog, BlogPost
 
 class Main(TemplateView):
     template_name = 'core/main.html'
-    """
     def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(**kwargs)
-        #return render(request, self.template_name, context=context)
+        if self.request.user.is_authenticated:
+            user_id = self.request.user.id
+            user = User.objects.get(id=user_id)
+            posts_list = BlogPost.objects.filter(
+                                                Q(published=True) &
+                                                Q(blog__subscribers=user)
+                                                ).order_by('-pub_date')
+            context = {
+                'posts_list': posts_list,
+            }
+        else:
+            context = {}
+
         return context
-    """
 
 
 class Blogs(TemplateView):
