@@ -19,7 +19,7 @@ class Main(TemplateView):
             posts_list = BlogPost.objects.filter(
                                                 Q(published=True) &
                                                 Q(blog__subscribers=user)
-                                                ).order_by('-pub_date')
+                                                ).order_by('pub_date')
             context = {
                 'posts_list': posts_list,
             }
