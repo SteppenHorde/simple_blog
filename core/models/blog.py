@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 class Blog(models.Model):
     author = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     subscribers = models.ManyToManyField(User, related_name='subscribers_blog_set', blank=True)
-    title = models.CharField(verbose_name='Название блога', max_length=100)
+    title = models.CharField(verbose_name='Название блога (по дефолту берётся от имени автора, но можно сменить вручную)', max_length=100)
 
     def __str__(self):
         return self.title
