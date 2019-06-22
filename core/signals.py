@@ -8,4 +8,6 @@ from .models.blog import Blog
 @receiver(post_save, sender=User)
 def create_blog(sender, instance, created, **kwargs):
     if created:
-        Blog.objects.create(author=instance)
+        author_username = instance.username
+        title = f"{author_username}' blog" if author_username[-1] == 's' else f"{author_username}'s blog"
+        Blog.objects.create(author=instance, title=title)
