@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views.generic.base import TemplateView
 from django.views import generic, View
+from django.contrib.auth.models import User
 
 from .models.blog import Blog, BlogPost
 
@@ -20,7 +21,22 @@ class Blogs(TemplateView):
     template_name = 'core/blogs.html'
 
     def get_context_data(self, *args, **kwargs):
-        all_blogs_set = Blog.objects.all()
+        all_blogs_query_set = Blog.objects.all()
+        all_blogs_set = set()
+
+        if self.request.user.is_authenticated:
+            is_authenticated = True
+            user_id = self.request.user.id
+            user = User.objects.get(id=user_id)
+        # проверяем для каждого блога, является ли данный пользователь подписчиком:
+        for blog in all_blogs_query_set:
+            blog_subscribers = blog.subscribers
+            if is_authenticated:
+                is_subscriber = blog_subscribers.all().filter(id=user_id).exists()
+            else:
+                is_subscriber = False
+            all_blogs_set.add((blog, is_subscriber))
+
         context = {
             'blogs_set': all_blogs_set,
         }
@@ -38,9 +54,20 @@ class ShowBlog(TemplateView):
         blog = Blog.objects.get(author_id=blog_id)
         posts_list = blog.blogpost_set.all()
 
+        # проверяем, является ли данный пользователь подписчиком:
+        # поле author является pk для Blog, поэтому id у них совпадают:
+        if self.request.user.is_authenticated:
+            user_id = self.request.user.id
+            user = User.objects.get(id=user_id)
+            blog_subscribers = blog.subscribers
+            is_subscriber = blog_subscribers.all().filter(id=user_id).exists()
+        else:
+            is_subscriber = False
+
         context = {
             'blog': blog,
             'posts_list': posts_list,
+            'is_subscriber': is_subscriber,
         }
 
         return context
@@ -56,19 +83,47 @@ class ShowPost(TemplateView):
         blog = Blog.objects.get(author_id=blog_id)
         post = blog.blogpost_set.get(id=post_id)
 
+        # проверяем, является ли данный пользователь подписчиком:
+        # поле author является pk для Blog, поэтому id у них совпадают:
+        if self.request.user.is_authenticated:
+            user_id = self.request.user.id
+            user = User.objects.get(id=user_id)
+            blog_subscribers = blog.subscribers
+            is_subscriber = blog_subscribers.all().filter(id=user_id).exists()
+        else:
+            is_subscriber = False
+
         context = {
             'blog': blog,
             'post': post,
+            'is_subscriber': is_subscriber,
         }
 
         return context
 
 
 class SubscribersManager(View):
-    pass
-    #def post(self, request, *args, **kwargs):
-        #print(args)
-        #print(kwargs)
+    def post(self, request, *args, **kwargs):
+        template_name = 'core/show_post.html'
+        user_id = request.user.id
+        user = User.objects.get(id=user_id)
+
+        blog_id = kwargs['blog_id']
+        # поле author является pk для Blog, поэтому id у них совпадают:
+        blog = Blog.objects.get(author_id=blog_id)
+        blog_subscribers = blog.subscribers
+         # если пользователь не подписан, то он добавляется в подписчики
+         # если подписан - удаляется. Надпись на кнопке в шаблонах тоже меняется
+        if not blog_subscribers.all().filter(id=user_id).exists():
+            blog_subscribers.add(user)
+        else:
+            blog_subscribers.remove(user)
+
+        context = {
+
+        }
+
+        return render(request, template_name, context=context)
 
 
 class CreatePost(generic.CreateView):

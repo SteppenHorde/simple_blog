@@ -16,7 +16,11 @@
         {% csrf_token %}
         {% if user.is_authenticated %}
           {% if user.id != blog.author.id %}
-            <input type="submit" class="btn btn-outline-dark btn-sm" value="Подписаться">
+            {% if not is_subscriber %}
+              <input type="submit" class="btn btn-outline-dark btn-sm" value="Подписаться">
+            {% else %}
+              <input type="submit" class="btn btn-outline-dark btn-sm" value="Отписаться">
+            {% endif %}
           {% else %}
             <p>Это ваш блог</p>
           {% endif %}

@@ -10,6 +10,22 @@
 
 {% block content %}
   <div class="content">
+    <form method="post" action="{% url "(un)subscribe" blog.author.id %}">
+      {% csrf_token %}
+      {% if user.is_authenticated %}
+        {% if user.id != blog.author.id %}
+          {% if not is_subscriber %}
+            <input type="submit" class="btn btn-outline-dark btn-sm" value="Подписаться">
+          {% else %}
+            <input type="submit" class="btn btn-outline-dark btn-sm" value="Отписаться">
+          {% endif %}
+        {% else %}
+          <p>Это ваш блог</p>
+        {% endif %}
+      {% else %}
+        <p>Чтобы подписаться нужно <a href="{% url "login" %}?next={{request.path}}">войти</a></p>
+      {% endif %}
+    </form>
     <div class="post">
       <h1><strong>{{ post.title }} ({{ blog.title }})</strong></h1>
       <p class="post-pub_date">{{ post.pub_date }}</p>
