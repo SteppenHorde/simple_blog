@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-from django.db import models
+from django.urls import reverse
 from django.contrib.auth.models import User
 
 
@@ -23,6 +23,9 @@ class BlogPost(models.Model):
     pub_date = models.DateTimeField(verbose_name='Дата создания/публикации', default=timezone.now)
     published = models.BooleanField(verbose_name='Опубликовать', help_text='Если установлен, то пост будет опубликован', default=False)
 
+    def __str__(self):
+        return f'{self.title} (опубликован)' if self.published else self.title
+
     def was_published_recently(self):
         now = timezone.now()
         return now - datetime.timedelta(days=1) <= self.pub_date <= now
@@ -30,5 +33,10 @@ class BlogPost(models.Model):
     was_published_recently.boolean = True
     was_published_recently.short_description = 'Опубликовано недавно?'
 
-    def __str__(self):
-        return f'{self.title} (опубликован)' if self.published else self.title
+    def get_absolute_url(self):
+        # поле author является pk для Blog, поэтому id у них совпадают:
+        blog_id = self.blog.author.id # == user_id
+        return reverse('show_post', kwargs={
+                                            'blog_id': blog_id,
+                                            'post_id': self.pk,
+                                            })
