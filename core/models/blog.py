@@ -21,10 +21,9 @@ class BlogPost(models.Model):
     text = models.TextField(verbose_name='Текст', help_text='Показывается на страничке поста')
     image = models.ImageField(upload_to='core/blog/images', verbose_name='Картинка', blank=True, null=True)
     pub_date = models.DateTimeField(verbose_name='Дата создания/публикации', default=timezone.now)
-    published = models.BooleanField(verbose_name='Опубликовать', help_text='Если установлен, то пост будет опубликован', default=False)
 
     def __str__(self):
-        return f'{self.title} (опубликован)' if self.published else self.title
+        return self.title
 
     def was_published_recently(self):
         now = timezone.now()

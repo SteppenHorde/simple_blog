@@ -3,7 +3,6 @@ from django.views.generic.base import TemplateView
 from django.views import generic, View
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Q
 
 from .models.blog import Blog, BlogPost
 
@@ -17,13 +16,12 @@ class Main(TemplateView):
             user_id = self.request.user.id
             user = User.objects.get(id=user_id)
             posts_list = BlogPost.objects.filter(
-                                                Q(published=True) &
-                                                Q(blog__subscribers=user)
+                                                blog__subscribers=user
                                                 ).order_by('-pub_date')
             # собираем все прочитанные посты:
             read_posts = set()
             for post in posts_list:
-                if post.read.all().filter(id=user_id).exists(): # .get(id=user_id) => исключение
+                if post.read.all().filter(id=user_id).exists(): # .get(id=user_id) => exception
                     read_posts.add(post)
 
             context = {
@@ -179,7 +177,7 @@ class CreatePost(LoginRequiredMixin, generic.CreateView):
     # после создания поста инициируется переход на этот пост с помощью
     # instance.get_absolute_url, вызываемого автоматически
     model = BlogPost
-    fields = ['title', 'text', 'image', 'pub_date', 'published']
+    fields = ['title', 'text', 'image', 'pub_date']
     template_name_suffix = '_create_form'
 
     # привязываем создаваемый пост к блогу текущего пользователя:

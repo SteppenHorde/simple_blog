@@ -14,7 +14,7 @@ admin.site.register(Blog, BlogAdmin)
 
 class BlogPostAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None, {'fields': ['blog', 'read', 'title', 'text', 'image', 'pub_date', 'published']}),
+        (None, {'fields': ['blog', 'read', 'title', 'text', 'image', 'pub_date']}),
     ]
     list_filter = ['pub_date']
     search_fields = ['title', 'text']
