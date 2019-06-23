@@ -149,6 +149,11 @@ class SubscribersManager(LoginRequiredMixin, View):
             blog_subscribers.add(user)
         else:
             blog_subscribers.remove(user)
+            posts_set = BlogPost.objects.filter(blog=blog)
+            for post in posts_set:
+                post_read = post.read
+                if post_read.all().filter(id=user_id).exists():
+                    post_read.remove(user) 
 
         # возвращаемся на предыдущую страничку с помощью HTTP_REFERER
         # если HTTP_REFERER отсутствует - на главную:
@@ -165,7 +170,7 @@ class MarkRead(LoginRequiredMixin, View):
         post = BlogPost.objects.get(pk=post_id)
 
         post_read = post.read
-        post_read.add(user) # если user в post_read, то не дублируется
+        post_read.add(user) # если user уже в post_read, то не дублируется
 
         # возвращаемся на предыдущую страничку с помощью HTTP_REFERER
         # если HTTP_REFERER отсутствует - на главную:
