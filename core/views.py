@@ -3,7 +3,7 @@ from django.views.generic.base import TemplateView
 from django.views import generic, View
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from django.db.models import Q
 
 from .models.blog import Blog, BlogPost
@@ -143,7 +143,7 @@ class CreatePost(LoginRequiredMixin, generic.CreateView):
     fields = ['title', 'text', 'image', 'pub_date', 'published']
     template_name_suffix = '_create_form'
 
-    # привязываем создаваемый пост к блогу текущего пользователя
+    # привязываем создаваемый пост к блогу текущего пользователя:
     def form_valid(self, form):
         # поле author является pk для Blog, поэтому id у них совпадают:
         blog_id = self.request.user.id
