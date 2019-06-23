@@ -1,9 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic.base import TemplateView
 from django.views import generic, View
 from django.contrib.auth.models import User
-from django.urls import reverse
-from django.shortcuts import redirect
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse, reverse_lazy
 from django.db.models import Q
 
 from .models.blog import Blog, BlogPost
@@ -19,7 +19,7 @@ class Main(TemplateView):
             posts_list = BlogPost.objects.filter(
                                                 Q(published=True) &
                                                 Q(blog__subscribers=user)
-                                                ).order_by('pub_date')
+                                                ).order_by('-pub_date')
             context = {
                 'posts_list': posts_list,
             }
@@ -40,6 +40,8 @@ class Blogs(TemplateView):
             is_authenticated = True
             user_id = self.request.user.id
             user = User.objects.get(id=user_id)
+        else:
+            is_authenticated = False
         # проверяем для каждого блога, является ли данный пользователь подписчиком:
         for blog in all_blogs_query_set:
             blog_subscribers = blog.subscribers
@@ -64,7 +66,7 @@ class ShowBlog(TemplateView):
         blog_id = kwargs['blog_id']
         # поле author является pk для Blog, поэтому id у них совпадают:
         blog = Blog.objects.get(author_id=blog_id)
-        posts_list = blog.blogpost_set.all()
+        posts_list = blog.blogpost_set.all().order_by('-pub_date')
 
         # проверяем, является ли данный пользователь подписчиком:
         # поле author является pk для Blog, поэтому id у них совпадают:
@@ -134,8 +136,17 @@ class SubscribersManager(View):
         return redirect(reverse('main'))
 
 
-class CreatePost(generic.CreateView):
-    pass
-    #form_class = UserCreationForm
-    #success_url = reverse_lazy('login') # после создания поста переход на
-    #template_name = 'core/create_post.html'
+class CreatePost(LoginRequiredMixin, generic.CreateView):
+    # после создания поста инициируется переход на этот пост с помощью
+    # instance.get_absolute_url, вызываемого автоматически
+    model = BlogPost
+    fields = ['title', 'text', 'image', 'pub_date', 'published']
+    template_name_suffix = '_create_form'
+
+    # привязываем создаваемый пост к блогу текущего пользователя
+    def form_valid(self, form):
+        # поле author является pk для Blog, поэтому id у них совпадают:
+        blog_id = self.request.user.id
+        blog = Blog.objects.get(author_id=blog_id)
+        form.instance.blog = blog
+        return super().form_valid(form)
