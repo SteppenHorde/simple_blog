@@ -8,19 +8,21 @@ from .models.blog import Blog, BlogPost
 
 
 
-class Main(TemplateView):
+class Main(TemplateView): # персональная лента новостей
     template_name = 'core/main.html'
     def get_context_data(self, *args, **kwargs):
         is_authenticated = self.request.user.is_authenticated
-        if is_authenticated:
+        if is_authenticated: # если user авторизован
             user_id = self.request.user.id
             user = User.objects.get(id=user_id)
+            # вытаскиваем все посты из всех блогов, на которые user подписан
             posts_list = BlogPost.objects.filter(
                                                 blog__subscribers=user
                                                 ).order_by('-pub_date')
             # собираем все прочитанные посты:
             read_posts = set()
             for post in posts_list:
+                post_read = post.read # список тех, кто отметил пост прочитанным
                 if post.read.all().filter(id=user_id).exists(): # .get(id=user_id) => exception
                     read_posts.add(post)
 
@@ -34,7 +36,7 @@ class Main(TemplateView):
         return context
 
 
-class Blogs(TemplateView):
+class Blogs(TemplateView): # список всех блогов
     template_name = 'core/blogs.html'
 
     def get_context_data(self, *args, **kwargs):
@@ -64,7 +66,7 @@ class Blogs(TemplateView):
         return context
 
 
-class ShowBlog(TemplateView):
+class ShowBlog(TemplateView): # отдельный блог со всеми постами
     template_name = 'core/show_blog.html'
 
     def get_context_data(self, *args, **kwargs):
@@ -79,8 +81,8 @@ class ShowBlog(TemplateView):
         is_authenticated = self.request.user.is_authenticated
         if is_authenticated:
             user_id = self.request.user.id
-            user = User.objects.get(id=user_id)
             blog_subscribers = blog.subscribers
+            # вытаскиваем всех подписчиков и смотрим, есть ли среди них user
             is_subscriber = blog_subscribers.all().filter(id=user_id).exists()
             # заодно собираем все прочитанные посты:
             for post in posts_list:
@@ -98,7 +100,7 @@ class ShowBlog(TemplateView):
         return context
 
 
-class ShowPost(TemplateView):
+class ShowPost(TemplateView): # отдельный пост
     template_name = 'core/show_post.html'
 
     def get_context_data(self, *args, **kwargs):
@@ -118,7 +120,6 @@ class ShowPost(TemplateView):
         is_authenticated = self.request.user.is_authenticated
         if is_authenticated:
             user_id = self.request.user.id
-            user = User.objects.get(id=user_id)
             blog_subscribers = blog.subscribers
             is_subscriber = blog_subscribers.all().filter(id=user_id).exists()
         else:
@@ -134,7 +135,7 @@ class ShowPost(TemplateView):
         return context
 
 
-class SubscribersManager(LoginRequiredMixin, View):
+class SubscribersManager(LoginRequiredMixin, View): # добавляет и удаляет подписчиков
     def post(self, request, *args, **kwargs):
         user_id = request.user.id
         user = User.objects.get(id=user_id)
@@ -149,11 +150,12 @@ class SubscribersManager(LoginRequiredMixin, View):
             blog_subscribers.add(user)
         else:
             blog_subscribers.remove(user)
+            # удаляем все отметки "прочитано" в соответствии с заданием:
             posts_set = BlogPost.objects.filter(blog=blog)
             for post in posts_set:
-                post_read = post.read
+                post_read = post.read # список тех, кто отметил пост прочитанным
                 if post_read.all().filter(id=user_id).exists():
-                    post_read.remove(user) 
+                    post_read.remove(user)
 
         # возвращаемся на предыдущую страничку с помощью HTTP_REFERER
         # если HTTP_REFERER отсутствует - на главную:
@@ -161,7 +163,7 @@ class SubscribersManager(LoginRequiredMixin, View):
         return redirect(previous_url)
 
 
-class MarkRead(LoginRequiredMixin, View):
+class MarkRead(LoginRequiredMixin, View): # помечает пост прочитанным
     def post(self, request, *args, **kwargs):
         user_id = request.user.id
         user = User.objects.get(id=user_id)
@@ -169,7 +171,7 @@ class MarkRead(LoginRequiredMixin, View):
         post_id = kwargs['post_id']
         post = BlogPost.objects.get(pk=post_id)
 
-        post_read = post.read
+        post_read = post.read # список тех, кто отметил пост прочитанным
         post_read.add(user) # если user уже в post_read, то не дублируется
 
         # возвращаемся на предыдущую страничку с помощью HTTP_REFERER
@@ -178,7 +180,7 @@ class MarkRead(LoginRequiredMixin, View):
         return redirect(previous_url)
 
 
-class CreatePost(LoginRequiredMixin, generic.CreateView):
+class CreatePost(LoginRequiredMixin, generic.CreateView): # создаёт пост
     # после создания поста инициируется переход на этот пост с помощью
     # instance.get_absolute_url, вызываемого автоматически
     model = BlogPost

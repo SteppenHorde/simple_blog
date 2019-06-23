@@ -9,6 +9,8 @@ from .models.blog import Blog, BlogPost
 LOCAL_HOST = 'http://127.0.0.1:8000' # для корректной ссылки на пост
 
 
+# создаёт блог автоматически при создании пользователя, ассоциирует их
+# и генерирует стандартное имя для блога (можно поменять в админке)
 @receiver(post_save, sender=User)
 def create_blog(sender, instance, created, **kwargs):
     if created:
@@ -17,6 +19,9 @@ def create_blog(sender, instance, created, **kwargs):
         Blog.objects.create(author=instance, title=title)
 
 
+# отправка почтового уведомления с использованием filebased.EmailBackend
+# сразу же после создания нового поста
+# письмо отправляется только тем пользователям, у которых заполнено поле email
 @receiver(post_save, sender=BlogPost)
 def send_email_note_of_a_new_post(sender, instance, created, **kwargs):
     if created:
