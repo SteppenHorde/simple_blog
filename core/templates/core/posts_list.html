@@ -10,7 +10,7 @@
           {% if user.is_authenticated %}
             {% if user.id != blog.author.id %}
               {% if is_subscriber %}
-                {% if not is_read %}
+                {% if post in read_posts %}
                   <p>Прочитано</p>
                 {% else %}
                   <input type="submit" class="btn btn-outline-dark btn-sm" value="Отметить прочитанным">
@@ -28,6 +28,4 @@
       </div>
     </div>
   {% endfor %}
-{% else %}
-  <p>Нет ни одного поста (вы уверены, что подписаны хотя бы на 1 непустой блог?).</p>
 {% endif %}

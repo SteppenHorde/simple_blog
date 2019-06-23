@@ -1,0 +1,25 @@
+<!-- templates/core/news_feed_posts_list.html -->
+{% if posts_list.count > 0 %}
+  {% for post in posts_list %}
+    <div class="col-lg-4">
+      <div class="post col-md-12">
+        <h3><a class="" href="{% url "show_post" post.blog.author.id post.id %}">{{ post.title }}({{ post.blog.title }})</a></h3>
+        <p class="post-pub_date">{{ post.pub_date }}</p>
+        <form method="post" action="{% url "mark_read" post.blog.author.id post.id %}">
+          {% csrf_token %}
+          {% if post in read_posts %}
+            <p>Прочитано</p>
+          {% else %}
+            <input type="submit" class="btn btn-outline-dark btn-sm" value="Отметить прочитанным">
+          {% endif %}
+        </form>
+        {% if post.img %}
+          <img class="post_img" src="{{ post.image.url }}" alt="Картинка к посту" width="100%" vspace="10"></img>
+        {% endif %}
+        <p><strong>Текст:</strong>{{ post.text|truncatechars:100 }}</p>
+      </div>
+    </div>
+  {% endfor %}
+{% else %}
+  <p>Нет ни одного поста (вы уверены, что подписаны хотя бы на 1 непустой блог?).</p>
+{% endif %}

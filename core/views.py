@@ -20,10 +20,12 @@ class Main(TemplateView):
                                                 Q(published=True) &
                                                 Q(blog__subscribers=user)
                                                 ).order_by('-pub_date')
+            # собираем все прочитанные посты:
             read_posts = set()
             for post in posts_list:
                 if post.read.all().filter(id=user_id).exists(): # .get(id=user_id) => исключение
                     read_posts.add(post)
+
             context = {
                 'posts_list': posts_list,
                 'read_posts': read_posts,
@@ -88,7 +90,6 @@ class ShowBlog(TemplateView):
                     read_posts.add(post)
         else:
             is_subscriber = False
-
         context = {
             'blog': blog,
             'posts_list': posts_list,
@@ -109,7 +110,7 @@ class ShowPost(TemplateView):
         blog = Blog.objects.get(author_id=blog_id)
         post = blog.blogpost_set.get(id=post_id)
         # проверяем, отметил ли данный пользователь пост как прочитанный
-        user_id = blog_id
+        user_id = self.request.user.id
         if post.read.all().filter(id=user_id).exists(): # .get(id=user_id) => исключение
             is_read = True
         else:
@@ -167,7 +168,6 @@ class MarkRead(LoginRequiredMixin, View):
 
         post_read = post.read
         post_read.add(user) # если user в post_read, то не дублируется
-        print(post_read.all())
 
         # возвращаемся на предыдущую страничку с помощью HTTP_REFERER
         # если HTTP_REFERER отсутствует - на главную:

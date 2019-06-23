@@ -14,7 +14,7 @@
 
 <div class="row">
   {% if user.is_authenticated %}
-    {% include "core/posts_list.html" %}
+    {% include "core/news_feed_posts_list.html" %}
   {% else %}
     <p>Вы не вошли. <a href="{% url "login" %}?next={{request.path}}">Войти</a></p>
   {% endif %}

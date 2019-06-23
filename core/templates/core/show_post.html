@@ -33,7 +33,7 @@
         {% if user.is_authenticated %}
           {% if user.id != blog.author.id %}
             {% if is_subscriber %}
-              {% if not is_read %}
+              {% if is_read %}
                 <p>Прочитано</p>
               {% else %}
                 <input type="submit" class="btn btn-outline-dark btn-sm" value="Отметить прочитанным">
