@@ -118,7 +118,6 @@ class ShowPost(TemplateView):
 
 class SubscribersManager(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
-        template_name = 'core/show_post.html'
         user_id = request.user.id
         user = User.objects.get(id=user_id)
 
