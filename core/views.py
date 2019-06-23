@@ -116,7 +116,7 @@ class ShowPost(TemplateView):
         return context
 
 
-class SubscribersManager(View):
+class SubscribersManager(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         template_name = 'core/show_post.html'
         user_id = request.user.id
