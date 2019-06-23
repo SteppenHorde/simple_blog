@@ -6,6 +6,8 @@ from django.contrib.auth.models import User
 from .models.blog import Blog, BlogPost
 
 
+LOCAL_HOST = 'http://127.0.0.1:8000' # для корректной ссылки на пост
+
 
 @receiver(post_save, sender=User)
 def create_blog(sender, instance, created, **kwargs):
@@ -28,7 +30,7 @@ def send_email_note_of_a_new_post(sender, instance, created, **kwargs):
         recipient_list = [subscriber.email for subscriber in subscribers_with_emails]
 
         subject = f'Новый пост в блоге {blog_title} автора {author_username}'
-        message = f'В блоге {blog_title} появился новый пост!\nСсылка: {post_url}'
+        message = f'В блоге {blog_title} появился новый пост!\nСсылка: {LOCAL_HOST}{post_url}'
         from_email = 'simpleblog@example.com'
         datatuple = tuple((subject, message, from_email, [to_email]) for to_email in recipient_list)
 
