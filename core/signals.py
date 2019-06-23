@@ -31,7 +31,7 @@ def send_email_note_of_a_new_post(sender, instance, created, **kwargs):
         message = f'В блоге {blog_title} появился новый пост!\nСсылка: {post_url}'
         from_email = 'simpleblog@example.com'
         datatuple = tuple((subject, message, from_email, [to_email]) for to_email in recipient_list)
-        print(datatuple)
+
         send_mass_mail(
                     datatuple,
                     fail_silently=False,
